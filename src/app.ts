@@ -1,3 +1,26 @@
+// autobind decorator
+function autobind(
+    // hint for ts that we are not going to use the target and the methodName values but will accept them to use the argument thereafter
+  _: any,
+  _2: string,
+  descriptor: PropertyDescriptor
+) {
+    // access and store the original method that we defined
+    const originalMethod = descriptor.value;
+    const adjDescriptor: PropertyDescriptor = {
+        configurable: true,
+        // getter to call this on the original function and set to bndFn
+        // return tthe bound function
+       get(){
+        const boundFn = originalMethod.bind(this);
+        return boundFn;
+       }
+    };
+    // overall return the adjDescriptor method decorator
+    return adjDescriptor;
+}
+
+// project input class
 class ProjectInput {
   // fields in the class to assign to
   templateElement: HTMLTemplateElement;
@@ -40,7 +63,7 @@ class ProjectInput {
     this.configure();
     this.attach();
   }
-
+  @autobind
   // this method should trigger whenever the form is submitted
   private submitHandler(event: Event) {
     // prevent an http request being sent here
@@ -49,7 +72,7 @@ class ProjectInput {
   }
   // private method added to add listener element to form  and bind to private method
   private configure() {
-    this.element.addEventListener("submit", this.submitHandler.bind(this));
+    this.element.addEventListener("submit", this.submitHandler);
   }
 
   //    private method added to split the seltion and rendering logic
