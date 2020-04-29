@@ -69,7 +69,47 @@ function autobind(
   return adjDescriptor;
 }
 
-// project input class
+// project list class to gather template and render in the app
+class ProjectList {
+  // required fields
+  templateElement: HTMLTemplateElement;
+  hostElement: HTMLDivElement;
+  element: HTMLElement;
+  constructor(private type: "active" | "finished") {
+    // get access to all core elements and where they should be rendered
+    // ! to tell ts that this will not be null and will be typecast to HTMLElemnts
+    this.templateElement = document.getElementById(
+      "project-list"
+    )! as HTMLTemplateElement;
+    this.hostElement = document.getElementById("app")! as HTMLDivElement;
+
+    // import content from template element using importNode method on the DOM then
+    // pass in a pointer/ref to the content which is a property that exists on the HTMLElement
+    // true is also passed in to to state that deep clone is required (all levels of nesting)
+    const importNode = document.importNode(this.templateElement.content, true);
+    // render the content to the DOM
+    // store in element property, the first element in the template which is the section element
+    this.element = importNode.firstElementChild as HTMLElement;
+    // add id from user template
+    this.element.id = `${this.type}-projects`;
+    this.attach();
+    this.renderContent();
+    
+  }
+
+  private renderContent() {
+      const listId = `${this.type}-projects-list`;
+      this.element.querySelector('ul')!.id = listId;
+      this.element.querySelector('h2')!.textContent = this.type.toUpperCase()+ 'PROJECTS';
+  }
+
+  // render list to DOM using insertAdjacentElement method to insert an element before the targeted elements closing tags
+  private attach() {
+    this.hostElement.insertAdjacentElement('beforeend', this.element);
+  }
+}
+
+// project input class for rendering the form and gathering user input
 class ProjectInput {
   // fields in the class to assign to
   templateElement: HTMLTemplateElement;
@@ -81,8 +121,8 @@ class ProjectInput {
 
   constructor() {
     // get access to elements and where they should be rendered
-    // ! to tell ts that this will not be null and will be typecast to HTMLElemnts
 
+    // ! to tell ts that this will not be null and will be typecast to HTMLElemnts
     this.templateElement = document.getElementById(
       "project-input"
     )! as HTMLTemplateElement;
@@ -133,7 +173,7 @@ class ProjectInput {
       value: +enteredPeopleNo,
       required: true,
       min: 1,
-      max: 5
+      max: 5,
     };
 
     if (
@@ -175,7 +215,7 @@ class ProjectInput {
     this.element.addEventListener("submit", this.submitHandler);
   }
 
-  //    private method added to split the seltion and rendering logic
+  //    private method added to split the selection and rendering logic
   //   using insertAdjacentElement method to insert an element after the targeted elements opening tags
   private attach() {
     this.hostElement.insertAdjacentElement("afterbegin", this.element);
@@ -183,3 +223,5 @@ class ProjectInput {
 }
 
 const prjInput = new ProjectInput();
+const activePrjList = new ProjectList('active');
+const finishedPrjList = new ProjectList('finished');
