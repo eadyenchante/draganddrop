@@ -1,3 +1,52 @@
+// validation logic
+interface Validatable {
+  value: string | number;
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+}
+
+function validate(ValidatableInput: Validatable) {
+  let isValid = true;
+  if (ValidatableInput.required) {
+    // set isvalid to true if isValid is required and value of string length is not 0
+    isValid = isValid && ValidatableInput.value.toString().trim().length !== 0;
+  }
+  // check if isValid has a min length that is not a falsy value and is of type string, if so is the value length greater than the min length
+  if (
+    ValidatableInput.minLength != null &&
+    typeof ValidatableInput.value === "string"
+  ) {
+    isValid =
+      isValid && ValidatableInput.value.length >= ValidatableInput.minLength;
+  }
+  // check if isValid has a max length that is not a falsy value and is of type string, if so is the value length greater than or equall to the min length
+  if (
+    ValidatableInput.maxLength != null &&
+    typeof ValidatableInput.value === "string"
+  ) {
+    isValid =
+      isValid && ValidatableInput.value.length <= ValidatableInput.maxLength;
+  }
+  // check if isValid is of type number and greater or equall to min
+  if (
+    ValidatableInput.min != null &&
+    typeof ValidatableInput.value === "number"
+  ) {
+    isValid = isValid && ValidatableInput.value >= ValidatableInput.min;
+  }
+  // check if isValid is of type number and greater than or equall to min
+  if (
+    ValidatableInput.max != null &&
+    typeof ValidatableInput.value === "number"
+  ) {
+    isValid = isValid && ValidatableInput.value <= ValidatableInput.max;
+  }
+  return isValid;
+}
+
 // autobind decorator
 function autobind(
   // hint for ts that we are not going to use the target and the methodName values but will accept them to use the argument thereafter
@@ -64,32 +113,46 @@ class ProjectInput {
     this.attach();
   }
 
-  // method to gather user input value and store in constants this will return a tuple or a union type to allow for potentially void 
+  // method to gather user input value and store in constants this will return a tuple or a union type to allow for potentially void
   private gatherUserInput(): [string, string, number] | void {
     const enteredTitle = this.titleInputElement.value;
     const enteredDescription = this.descriptionInputElement.value;
     const enteredPeopleNo = this.peopleInputElement.value;
 
-    // validate TODO improve
     // validation check to show alert or return tuple
+    const titleValidatable: Validatable = {
+      value: enteredTitle,
+      required: true,
+    };
+    const descriptionValidatable: Validatable = {
+      value: enteredDescription,
+      required: true,
+      minLength: 5,
+    };
+    const peopleValidatable: Validatable = {
+      value: +enteredPeopleNo,
+      required: true,
+      min: 1,
+      max: 5
+    };
+
     if (
-      enteredTitle.trim().length === 0 ||
-      enteredDescription.trim().length === 0 ||
-      enteredPeopleNo.trim().length === 0
+      !validate(titleValidatable) ||
+      !validate(descriptionValidatable) ||
+      !validate(peopleValidatable)
     ) {
-alert('invalid input , please try again')
-    }else{
-        // convert enteredPeopleNo to
-        return [enteredTitle, enteredDescription, +enteredPeopleNo];
+      alert("invalid input , please try again");
+    } else {
+      // convert enteredPeopleNo to
+      return [enteredTitle, enteredDescription, +enteredPeopleNo];
     }
   }
 
   // method to clear input fields after submit
-  private  clearInputs() {
-      this.titleInputElement.value = '';
-      this.descriptionInputElement.value = '';
-      this.peopleInputElement.value = '';
-      
+  private clearInputs() {
+    this.titleInputElement.value = "";
+    this.descriptionInputElement.value = "";
+    this.peopleInputElement.value = "";
   }
 
   @autobind
@@ -101,11 +164,11 @@ alert('invalid input , please try again')
     // console.log(this.titleInputElement.value);
     // if check using array method to establish if it returns an array and if true, destructuring to get the values out of userInput and log to console
     const userInput = this.gatherUserInput();
-if(Array.isArray(userInput)){
-    const [title, desc, people] = userInput;
-    console.log(title, desc, people);
-    this.clearInputs();
-}
+    if (Array.isArray(userInput)) {
+      const [title, desc, people] = userInput;
+      console.log(title, desc, people);
+      this.clearInputs();
+    }
   }
   // private method added to add listener element to form  and bind to private method
   private configure() {
