@@ -16,8 +16,11 @@
   "license": "ISC",
   "devDependencies": {
     "@types/lodash": "^4.14.152",
+    "class-transformer": "^0.2.3",
+    "class-transformer-validator": "^0.8.0",
     "clean-webpack-plugin": "^3.0.0",
     "lite-server": "^2.5.4",
+    "reflect-metadata": "^0.1.13",
     "ts-loader": "^7.0.4",
     "typescript": "^3.9.2",
     "webpack": "^4.43.0",
@@ -25,9 +28,8 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
-    "class-transformer": "^0.2.3",
+    "class-validator": "^0.12.2",
     "es6-shim": "^0.35.5",
-    "lodash": "^4.17.15",
-    "reflect-metadata": "^0.1.13"
+    "lodash": "^4.17.15"
   }
 }
