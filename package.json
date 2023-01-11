@@ -28,7 +28,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
-    "class-validator": "^0.12.2",
+    "class-validator": "^0.14.0",
     "es6-shim": "^0.35.5",
     "lodash": "^4.17.15"
   }
